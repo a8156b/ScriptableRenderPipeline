@@ -105,7 +105,7 @@ namespace UnityEngine.Experimental.Rendering.LightweightPipeline
             foreach (Camera camera in cameras)
             {
                 BeginCameraRendering(camera);
-                string renderCameraTag = "Render " + camera.name;
+                string renderCameraTag = camera.name;
                 CommandBuffer cmd = CommandBufferPool.Get(renderCameraTag);
                 using (new ProfilingSample(cmd, renderCameraTag))
                 {
