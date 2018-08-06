@@ -83,11 +83,6 @@ namespace UnityEngine.Experimental.Rendering.LightweightPipeline
 
         public override void Render(ScriptableRenderContext context, Camera[] cameras)
         {
-            if (m_IsCameraRendering)
-            {
-                Debug.LogWarning("Nested camera rendering is forbidden. If you are calling camera.Render inside OnWillRenderObject callback, use BeginCameraRender callback instead.");
-                return;
-            }
             pipelineAsset.savedXRGraphicsConfig.renderScale = pipelineAsset.renderScale;
             pipelineAsset.savedXRGraphicsConfig.viewportScale = 1.0f; // Placeholder until viewportScale is all hooked up
             // Apply any changes to XRGConfig prior to this point
@@ -126,42 +121,25 @@ namespace UnityEngine.Experimental.Rendering.LightweightPipeline
                     cmd.Clear();
 
 #if UNITY_EDITOR
-                    try
+                    // Emit scene view UI
+                    if (cameraData.isSceneViewCamera)
+                        ScriptableRenderContext.EmitWorldGeometryForSceneView(camera);
 #endif
-                    {
-                        m_IsCameraRendering = true;
-#if UNITY_EDITOR
-                        // Emit scene view UI
-                        if (cameraData.isSceneViewCamera)
-                            ScriptableRenderContext.EmitWorldGeometryForSceneView(camera);
-#endif
-                        CullResults.Cull(ref cullingParameters, context, ref m_CullResults);
-                        List<VisibleLight> visibleLights = m_CullResults.visibleLights;
+                    CullResults.Cull(ref cullingParameters, context, ref m_CullResults);
+                    List<VisibleLight> visibleLights = m_CullResults.visibleLights;
 
-                        RenderingData renderingData;
-                        InitializeRenderingData(ref cameraData, visibleLights,
-                            m_Renderer.maxSupportedLocalLightsPerPass, m_Renderer.maxSupportedVertexLights,
-                            out renderingData);
+                    RenderingData renderingData;
+                    InitializeRenderingData(ref cameraData, visibleLights,
+                        m_Renderer.maxSupportedLocalLightsPerPass, m_Renderer.maxSupportedVertexLights,
+                        out renderingData);
 
-                        var setup = cameraData.camera.GetComponent<IRendererSetup>();
-                        if (setup == null)
-                            setup = defaultRendererSetup;
+                    var setup = cameraData.camera.GetComponent<IRendererSetup>();
+                    if (setup == null)
+                        setup = defaultRendererSetup;
 
-                        setup.Setup(m_Renderer, ref context, ref m_CullResults, ref renderingData);
+                    setup.Setup(m_Renderer, ref context, ref m_CullResults, ref renderingData);
 
-                        m_Renderer.Execute(ref context, ref m_CullResults, ref renderingData);
-                    }
-#if UNITY_EDITOR
-                    catch (Exception)
-                    {
-                        CommandBufferPool.Release(cmd);
-                        throw;
-                    }
-                    finally
-#endif
-                    {
-                        m_IsCameraRendering = false;
-                    }
+                    m_Renderer.Execute(ref context, ref m_CullResults, ref renderingData);
                 }
                 context.ExecuteCommandBuffer(cmd);
                 CommandBufferPool.Release(cmd);
@@ -383,7 +361,6 @@ namespace UnityEngine.Experimental.Rendering.LightweightPipeline
             Matrix4x4 viewProjMatrix = projMatrix * viewMatrix;
             Matrix4x4 invViewProjMatrix = Matrix4x4.Inverse(viewProjMatrix);
             Shader.SetGlobalMatrix(PerCameraBuffer._InvCameraViewProj, invViewProjMatrix);
-
         }
     }
 }
