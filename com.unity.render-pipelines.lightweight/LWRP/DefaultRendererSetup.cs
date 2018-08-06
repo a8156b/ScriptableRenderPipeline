@@ -9,7 +9,7 @@ namespace UnityEngine.Experimental.Rendering.LightweightPipeline
         private DirectionalShadowsPass m_DirectionalShadowPass;
         private LocalShadowsPass m_LocalShadowPass;
         private SetupForwardRenderingPass m_SetupForwardRenderingPass;
-        private ScreenSpaceShadowResolvePass m_ScreenSpaceShadowResovePass;
+        private ScreenSpaceShadowResolvePass m_ScreenSpaceShadowResolvePass;
         private CreateLightweightRenderTexturesPass m_CreateLightweightRenderTexturesPass;
         private BeginXRRenderingPass m_BeginXrRenderingPass;
         private SetupLightweightConstanstPass m_SetupLightweightConstants;
@@ -48,7 +48,7 @@ namespace UnityEngine.Experimental.Rendering.LightweightPipeline
             m_DirectionalShadowPass = new DirectionalShadowsPass();
             m_LocalShadowPass = new LocalShadowsPass();
             m_SetupForwardRenderingPass = new SetupForwardRenderingPass();
-            m_ScreenSpaceShadowResovePass = new ScreenSpaceShadowResolvePass();
+            m_ScreenSpaceShadowResolvePass = new ScreenSpaceShadowResolvePass();
             m_CreateLightweightRenderTexturesPass = new CreateLightweightRenderTexturesPass();
             m_BeginXrRenderingPass = new BeginXRRenderingPass();
             m_SetupLightweightConstants = new SetupLightweightConstanstPass();
@@ -124,8 +124,8 @@ namespace UnityEngine.Experimental.Rendering.LightweightPipeline
             if (renderingData.shadowData.renderDirectionalShadows &&
                 renderingData.shadowData.requiresScreenSpaceShadowResolve)
             {
-                m_ScreenSpaceShadowResovePass.Setup(baseDescriptor, ScreenSpaceShadowmap);
-                renderer.EnqueuePass(m_ScreenSpaceShadowResovePass);
+                m_ScreenSpaceShadowResolvePass.Setup(baseDescriptor, ScreenSpaceShadowmap);
+                renderer.EnqueuePass(m_ScreenSpaceShadowResolvePass);
             }
 
             bool requiresDepthAttachment = requiresCameraDepth && !requiresDepthPrepass;
