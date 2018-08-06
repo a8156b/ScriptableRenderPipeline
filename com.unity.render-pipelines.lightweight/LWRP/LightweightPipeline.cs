@@ -33,7 +33,7 @@ namespace UnityEngine.Experimental.Rendering.LightweightPipeline
 
         CameraComparer m_CameraComparer = new CameraComparer();
 
-        LightweightForwardRenderer m_Renderer;
+        ScriptableRenderer m_Renderer;
         CullResults m_CullResults;
         List<int> m_LocalLightIndices = new List<int>();
 
@@ -50,7 +50,7 @@ namespace UnityEngine.Experimental.Rendering.LightweightPipeline
             PerFrameBuffer._SubtractiveShadowColor = Shader.PropertyToID("_SubtractiveShadowColor");
 
             SetupLightweightConstanstPass.PerCameraBuffer._ScaledScreenParams = Shader.PropertyToID("_ScaledScreenParams");
-            m_Renderer = new LightweightForwardRenderer(asset);
+            m_Renderer = new ScriptableRenderer(asset);
 
             // Let engine know we have MSAA on for cases where we support MSAA backbuffer
             if (QualitySettings.antiAliasing != pipelineAsset.msaaSampleCount)
